@@ -6,7 +6,7 @@ defmodule ValidationShowcase.Accounts do
   import Ecto.Query, warn: false
   alias ValidationShowcase.Repo
 
-  alias ValidationShowcase.Accounts.User
+  alias ValidationShowcase.Accounts.{User, UserMailer}
 
   @doc """
   Returns the list of users.
@@ -53,7 +53,15 @@ defmodule ValidationShowcase.Accounts do
     %User{}
     |> User.registration_changeset(attrs)
     |> Repo.insert()
+    |> send_welcome_email()
   end
+
+  defp send_welcome_email({:ok, user}) do
+    UserMailer.welcome(user)
+    {:ok, user}
+  end
+
+  defp send_welcome_email(whatever), do: whatever
 
   @doc """
   Updates a user.
